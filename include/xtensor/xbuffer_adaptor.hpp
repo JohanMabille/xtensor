@@ -75,6 +75,9 @@ namespace xt
             pointer data() noexcept;
             const_pointer data() const noexcept;
 
+            pointer begin_impl() noexcept;
+            const_pointer begin_impl() const noexcept;
+
             void swap(self_type& rhs) noexcept;
 
             template <class P>
@@ -117,6 +120,9 @@ namespace xt
 
             pointer data() noexcept;
             const_pointer data() const noexcept;
+
+            pointer begin_impl() noexcept;
+            const_pointer begin_impl() const noexcept;
 
             void swap(self_type& rhs) noexcept;
 
@@ -169,6 +175,9 @@ namespace xt
 
             pointer data() noexcept;
             const_pointer data() const noexcept;
+
+            pointer begin_impl() noexcept;
+            const_pointer begin_impl() const noexcept;
 
             allocator_type get_allocator() const noexcept;
 
@@ -401,6 +410,7 @@ namespace xt
         using base_type::size;
         using base_type::resize;
         using base_type::data;
+        using base_type::begin_impl;
         using base_type::swap;
         using base_type::reset_data;
     };
@@ -451,6 +461,8 @@ namespace xt
         using size_type = typename base_type::size_type;
         using iterator = typename base_type::iterator;
         using const_iterator = typename base_type::const_iterator;
+        using pointer = typename base_type::pointer;
+        using const_pointer = typename base_type::const_pointer;
         using temporary_type = uvector<value_type, allocator_type>;
 
         xiterator_adaptor() = default;
@@ -470,8 +482,11 @@ namespace xt
         size_type size() const noexcept;
         void resize(size_type size);
 
-        iterator data() noexcept;
-        const_iterator data() const noexcept;
+        pointer data() noexcept;
+        const_pointer data() const noexcept;
+
+        iterator begin_impl() noexcept;
+        const_iterator begin_impl() const noexcept;
 
         void swap(self_type& rhs) noexcept;
 
@@ -534,6 +549,8 @@ namespace xt
         using size_type = typename base_type::size_type;
         using iterator = typename base_type::iterator;
         using const_iterator = typename base_type::const_iterator;
+        using pointer = typename base_type::pointer;
+        using const_pointer = typename base_type::const_pointer;
         using temporary_type = uvector<value_type, allocator_type>;
 
         xiterator_owner_adaptor(C&& c);
@@ -552,8 +569,11 @@ namespace xt
         size_type size() const noexcept;
         void resize(size_type size);
 
-        iterator data() noexcept;
-        const_iterator data() const noexcept;
+        pointer data() noexcept;
+        const_pointer data() const noexcept;
+
+        iterator begin_impl() noexcept;
+        const_iterator begin_impl() const noexcept;
 
         void swap(self_type& rhs) noexcept;
 
@@ -659,6 +679,18 @@ namespace xt
         inline auto xbuffer_storage<CP, A>::data() const noexcept -> const_pointer
         {
             return p_data;
+        }
+
+        template <class CP, class A>
+        inline auto xbuffer_storage<CP, A>::begin_impl() noexcept -> pointer
+        {
+            return data();
+        }
+
+        template <class CP, class A>
+        inline auto xbuffer_storage<CP, A>::begin_impl() const noexcept -> const_pointer
+        {
+            return data();
         }
 
         template <class CP, class A>
@@ -772,6 +804,18 @@ namespace xt
         }
 
         template <class CP, class A>
+        inline auto xbuffer_owner_storage<CP, A>::begin_impl() noexcept -> pointer
+        {
+            return data();
+        }
+
+        template <class CP, class A>
+        inline auto xbuffer_owner_storage<CP, A>::begin_impl() const noexcept -> const_pointer
+        {
+            return data();
+        }
+
+        template <class CP, class A>
         inline auto xbuffer_owner_storage<CP, A>::get_allocator() const noexcept -> allocator_type
         {
             return allocator_type(m_allocator);
@@ -835,6 +879,17 @@ namespace xt
         }
 
         template <class CP, class D>
+        auto xbuffer_smart_pointer<CP, D>::begin_impl() noexcept -> pointer
+        {
+            return data();
+        }
+        template <class CP, class D>
+        auto xbuffer_smart_pointer<CP, D>::begin_impl() const noexcept -> const_pointer
+        {
+            return data();
+        }
+
+        template <class CP, class D>
         void xbuffer_smart_pointer<CP, D>::swap(self_type& rhs) noexcept
         {
             using std::swap;
@@ -866,13 +921,13 @@ namespace xt
     template <class D>
     inline auto xbuffer_adaptor_base<D>::operator[](size_type i) -> reference
     {
-        return derived_cast().data()[static_cast<index_type>(i)];
+        return begin()[static_cast<index_type>(i)];
     }
 
     template <class D>
     inline auto xbuffer_adaptor_base<D>::operator[](size_type i) const -> const_reference
     {
-        return derived_cast().data()[static_cast<index_type>(i)];
+        return begin()[static_cast<index_type>(i)];
     }
 
     template <class D>
@@ -902,25 +957,25 @@ namespace xt
     template <class D>
     inline auto xbuffer_adaptor_base<D>::begin() noexcept -> iterator
     {
-        return derived_cast().data();
+        return derived_cast().begin_impl();
     }
 
     template <class D>
     inline auto xbuffer_adaptor_base<D>::end() noexcept-> iterator
     {
-        return derived_cast().data() + static_cast<index_type>(derived_cast().size());
+        return derived_cast().begin_impl() + static_cast<index_type>(derived_cast().size());
     }
 
     template <class D>
     inline auto xbuffer_adaptor_base<D>::begin() const noexcept -> const_iterator
     {
-        return derived_cast().data();
+        return derived_cast().begin_impl();
     }
 
     template <class D>
     inline auto xbuffer_adaptor_base<D>::end() const noexcept -> const_iterator
     {
-        return derived_cast().data() + static_cast<index_type>(derived_cast().size());
+        return derived_cast().begin_impl() + static_cast<index_type>(derived_cast().size());
     }
 
     template <class D>
@@ -1092,13 +1147,25 @@ namespace xt
     }
 
     template <class I, class CI>
-    inline auto xiterator_adaptor<I, CI>::data() noexcept -> iterator
+    inline auto xiterator_adaptor<I, CI>::data() noexcept -> pointer
+    {
+        return &(*m_it);
+    }
+
+    template <class I, class CI>
+    inline auto xiterator_adaptor<I, CI>::data() const noexcept -> const_pointer
+    {
+        return &(*m_cit);
+    }
+
+    template <class I, class CI>
+    inline auto xiterator_adaptor<I, CI>::begin_impl() noexcept -> iterator
     {
         return m_it;
     }
 
     template <class I, class CI>
-    inline auto xiterator_adaptor<I, CI>::data() const noexcept -> const_iterator
+    inline auto xiterator_adaptor<I, CI>::begin_impl() const noexcept -> const_iterator
     {
         return m_cit;
     }
@@ -1188,13 +1255,25 @@ namespace xt
     }
 
     template <class C, class IG>
-    inline auto xiterator_owner_adaptor<C, IG>:: data() noexcept -> iterator
+    inline auto xiterator_owner_adaptor<C, IG>::data() noexcept -> pointer
+    {
+        return &(*m_it);
+    }
+
+    template <class C, class IG>
+    inline auto xiterator_owner_adaptor<C, IG>::data() const noexcept -> const_pointer
+    {
+        return &(*m_cit);
+    }
+
+    template <class C, class IG>
+    inline auto xiterator_owner_adaptor<C, IG>::begin_impl() noexcept -> iterator
     {
         return m_it;
     }
 
     template <class C, class IG>
-    inline auto xiterator_owner_adaptor<C, IG>:: data() const noexcept -> const_iterator
+    inline auto xiterator_owner_adaptor<C, IG>::begin_impl() const noexcept -> const_iterator
     {
         return m_cit;
     }
