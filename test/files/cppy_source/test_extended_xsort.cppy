@@ -131,6 +131,44 @@ namespace xt
     /*py
     a = np.random.rand(5, 5, 5)
     */
+    TEST(xtest_extended, quantile_axis)
+    {
+        // py_a
+
+        // py_q0 = np.quantile(a, [0., .3, .1, 1.], axis=0)
+        // py_q1 = np.quantile(a, [0., .3, .1, 1.], axis=1)
+        // py_q2 = np.quantile(a, [0., .3, .1, 1.], axis=2)
+
+        EXPECT_EQ(py_q0, xt::quantile(py_a, {0., .3, .1, 1.}, 0));
+        EXPECT_EQ(py_q1, xt::quantile(py_a, {0., .3, .1, 1.}, 1));
+        EXPECT_EQ(py_q2, xt::quantile(py_a, {0., .3, .1, 1.}, 2));
+    }
+
+    /*py
+    a = np.random.rand(5, 5, 5)
+    */
+    TEST(xtest_extended, quantile_methods)
+    {
+        // py_a
+
+        // py_q4 = np.quantile(a, [0., .3, .1, 1.], method="interpolated_inverted_cdf")
+        // py_q5 = np.quantile(a, [0., .3, .1, 1.], method="hazen")
+        // py_q6 = np.quantile(a, [0., .3, .1, 1.], method="weibull")
+        // py_q7 = np.quantile(a, [0., .3, .1, 1.], method="linear")
+        // py_q8 = np.quantile(a, [0., .3, .1, 1.], method="median_unbiased")
+        // py_q9 = np.quantile(a, [0., .3, .1, 1.], method="normal_unbiased")
+
+        EXPECT_EQ(py_q4, xt::quantile(py_a, {0., .3, .1, 1.}, quantile_method::interpolated_inverted_cdf));
+        EXPECT_EQ(py_q5, xt::quantile(py_a, {0., .3, .1, 1.}, quantile_method::hazen));
+        EXPECT_EQ(py_q6, xt::quantile(py_a, {0., .3, .1, 1.}, quantile_method::weibull));
+        EXPECT_EQ(py_q7, xt::quantile(py_a, {0., .3, .1, 1.}, quantile_method::linear));
+        EXPECT_EQ(py_q8, xt::quantile(py_a, {0., .3, .1, 1.}, quantile_method::median_unbiased));
+        EXPECT_EQ(py_q9, xt::quantile(py_a, {0., .3, .1, 1.}, quantile_method::normal_unbiased));
+    }
+
+    /*py
+    a = np.random.rand(5, 5, 5)
+    */
     TEST(xtest_extended, axis_median)
     {
         // py_a
