@@ -22,6 +22,7 @@
 #include "xtensor_config.hpp"
 #include "xtensor_forward.hpp"
 #include "xview.hpp"
+#include "xindex_view.hpp"
 #include "xmath.hpp"
 #include "xadapt.hpp"
 
