@@ -790,12 +790,16 @@ namespace xt
         inline auto quantile_kth_gamma(std::size_t n, P const& probas, T alpha, T beta)
         {
             auto const m = alpha + probas * (T(1) - alpha - beta);
-            auto const p_n_m = probas * static_cast<T>(n) + m;
+            // Evaluting since reused a lot
+            auto const p_n_m = eval(probas * static_cast<T>(n) + m - 1);
+            // Previous (virtual) index, may be out of bounds
             auto const j = floor(p_n_m);
-            return std::make_pair(
-                /* kth= */ eval(xt::cast<std::size_t>(j) - 1),  // jth index in article is 1-based
-                /* gamma= */ eval(p_n_m - j)
-                );
+            auto const j_jp1 = concatenate(xtuple(j, j+1));
+            // Both interpolation indices, k and k+1
+            auto const k_kp1 = xt::cast<std::size_t>(clip(j_jp1, 0, n-1));
+            // Both interpolation coefficients, 1-gamma and gamma
+            auto const omg_g = concatenate(xtuple(T(1) - (p_n_m -j), p_n_m - j));
+            return std::make_pair(eval(k_kp1), eval(omg_g));
         }
 
         // TODO should implement unsqueeze rather
@@ -887,19 +891,13 @@ namespace xt
         auto kth_gamma = detail::quantile_kth_gamma<T, id_t, P>(n, probas, alpha, beta);
 
         // Select relevant values for computing interpolating quantiles
-        auto k_kp1 = eval(xt::concatenate(
-            xt::xtuple(clip(kth_gamma.first, 0, n-1), clip(kth_gamma.first + 1, 0, n-1))
-        ));
-        auto e_partition = xt::partition(std::forward<E>(e), k_kp1, ax);
-        auto e_kth = detail::fancy_indexing(std::move(e_partition), std::move(k_kp1), ax);
+        auto e_partition = xt::partition(std::forward<E>(e), kth_gamma.first, ax);
+        auto e_kth = detail::fancy_indexing(std::move(e_partition), std::move(kth_gamma.first), ax);
 
         // Reshape interpolation coefficients
-        auto gm1_g = eval(xt::concatenate(
-            xt::xtuple(T(1) - kth_gamma.second, kth_gamma.second)
-        ));
         auto gm1_g_shape = xtl::make_sequence<tmp_shape_t>(e.dimension(), 1);
-        gm1_g_shape[ax] = gm1_g.size();
-        auto gm1_g_reshaped = reshape_view(std::move(gm1_g), std::move(gm1_g_shape));
+        gm1_g_shape[ax] = kth_gamma.second.size();
+        auto gm1_g_reshaped = reshape_view(std::move(kth_gamma.second), std::move(gm1_g_shape));
 
         // Compute interpolation
         // TODO(C++20) use (and create) xt::lerp in C++
