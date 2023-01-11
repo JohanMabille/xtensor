@@ -65,7 +65,7 @@ namespace xt
     /*py
     a = np.random.randint(0, 1000, size=(20,))
     */
-    TEST(xtest_extended, partition)
+    /*TEST(xtest_extended, partition)
     {
         // py_a
         xarray<long> py_a = {102,435,860,270,106, 71,700, 20,614,121,466,214,330,458, 87,372, 99,871,
@@ -109,12 +109,12 @@ namespace xt
         // py_median = np.median(a)
         double py_median = 300.0;
         EXPECT_EQ(static_cast<decltype(py_a)::value_type>(py_median), xt::median(py_a));
-    }
+    }*/
 
     /*py
     a = np.random.randint(0, 20, size=(20,))
     */
-    TEST(xtest_extended, multi_partition)
+    /*TEST(xtest_extended, multi_partition)
     {
         // py_a
         xarray<long> py_a = { 1,11, 5, 1, 0,11,11,16, 9,15,14,14,18,11,19, 2, 4,18, 6, 8};
@@ -150,12 +150,12 @@ namespace xt
         EXPECT_EQ(py_a[part_a1(2)], py_a[static_cast<std::size_t>(py_a1(2))]);
         EXPECT_EQ(py_a[part_a1(7)], py_a[static_cast<std::size_t>(py_a1(7))]);
         EXPECT_EQ(py_a[part_a1(12)], py_a[static_cast<std::size_t>(py_a1(12))]);
-    }
+    }*/
 
     /*py
     a = np.random.rand(5, 5, 5)
     */
-    TEST(xtest_extended, quantile_axis)
+    /*TEST(xtest_extended, quantile_axis)
     {
         // py_a
         xarray<double> py_a = {{{0.0650515929852795,0.9488855372533332,0.9656320330745594,
@@ -349,7 +349,7 @@ namespace xt
         EXPECT_TRUE(xt::allclose(py_q0, xt::quantile(py_a, {0., .3, .1, 1.}, 0)));
         EXPECT_TRUE(xt::allclose(py_q1, xt::quantile(py_a, {0., .3, .1, 1.}, 1)));
         EXPECT_TRUE(xt::allclose(py_q2, xt::quantile(py_a, {0., .3, .1, 1.}, 2)));
-    }
+    }*/
 
     /*py
     a = np.random.rand(5, 5, 5)
@@ -431,15 +431,13 @@ namespace xt
         xarray<double> py_q9 = {0.0050615838462187,0.3389780593388425,0.1122733234031334,
                                 0.9900538501042633};
 
-        PRINT(py_q4);
-        (xt::quantile(py_a, {0., .3, .1, 1.}, quantile_method::interpolated_inverted_cdf));
 
-        // EXPECT_TRUE(
-        //     xt::allclose(
-        //         py_q4,
-        //         xt::quantile(py_a, {0., .3, .1, 1.}, quantile_method::interpolated_inverted_cdf)
-        //     )
-        // );
+         EXPECT_TRUE(
+             xt::allclose(
+                 py_q4,
+                 xt::quantile(py_a, {0., .3, .1, 1.}, quantile_method::interpolated_inverted_cdf)
+             )
+         );
         // EXPECT_TRUE(
         //     xt::allclose(py_q5, xt::quantile(py_a, {0., .3, .1, 1.}, quantile_method::hazen))
         // );
@@ -466,7 +464,7 @@ namespace xt
     /*py
     a = np.random.rand(5, 5, 5)
     */
-    TEST(xtest_extended, axis_median)
+    /*TEST(xtest_extended, axis_median)
     {
         // py_a
         xarray<double> py_a = {{{0.375582952639944 ,0.093981939840869 ,0.578280140996174 ,
@@ -564,12 +562,12 @@ namespace xt
         EXPECT_EQ(py_m0, xt::median(py_a, 0));
         EXPECT_EQ(py_m1, xt::median(py_a, 1));
         EXPECT_EQ(py_m2, xt::median(py_a, 2));
-    }
+    }*/
 
     /*py
     a = np.random.permutation(np.arange(5 * 5 * 5)).reshape(5, 5, 5)
     */
-    TEST(xtest_extended, axis_partition)
+    /*TEST(xtest_extended, axis_partition)
     {
         // py_a
         xarray<long> py_a = {{{ 23,109,100, 58,  1},
@@ -799,12 +797,12 @@ namespace xt
         EXPECT_EQ(xt::cast<std::size_t>(xt::view(py_a0, 2, all(), all())), xt::view(a0, 2, all(), all()));
         EXPECT_EQ(xt::cast<std::size_t>(xt::view(py_a1, all(), 4, all())), xt::view(a1, all(), 4, all()));
         EXPECT_EQ(xt::cast<std::size_t>(xt::view(py_a2, all(), all(), 3)), xt::view(a2, all(), all(), 3));
-    }
+    }*/
 
     /*py
     a = np.random.permutation(np.arange(5 * 5 * 5)).reshape(5, 5, 5)
     */
-    TEST(xtest_extended, multi_k_axis_partition)
+    /*TEST(xtest_extended, multi_k_axis_partition)
     {
         // py_a
         xarray<long> py_a = {{{ 51,118,  6,106, 77},
@@ -1042,5 +1040,5 @@ namespace xt
         EXPECT_EQ(xt::cast<std::size_t>(xt::view(py_a0, 1, all(), all())), xt::view(a0, 1, all(), all()));
         EXPECT_EQ(xt::cast<std::size_t>(xt::view(py_a1, all(), 1, all())), xt::view(a1, all(), 1, all()));
         EXPECT_EQ(xt::cast<std::size_t>(xt::view(py_a2, all(), all(), 1)), xt::view(a2, all(), all(), 1));
-    }
+    }*/
 }

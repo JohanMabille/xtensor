@@ -907,6 +907,20 @@ namespace xt
         e_kth_g_shape[ax] = 2;
         e_kth_g_shape[ax + 1] /= 2;
         auto quantiles = xt::sum(reshape_view(std::move(e_kth_g), std::move(e_kth_g_shape)), ax);
+        /////////////
+        std::clog << "INIT" << std::endl;
+        auto iter = quantiles.cbegin();
+        std::clog << "\nDEREF[0]" << std::endl;
+        std::clog << *iter << std::endl;
+        std::clog << "\nInc 0 -> 1" << std::endl;
+        ++iter;
+        std::clog << "\nDeref[1]" << std::endl;
+        std::clog << *iter << std::endl;
+        std::clog << "\nInc 1 -> 2" << std::endl;
+        ++iter;
+        std::clog << "\nDeref[2]" << std::endl;
+        std::clog << *iter << std::endl;
+
         // Cannot do a transpose on a non-strided expression so we have to eval
         return detail::swapaxes(eval(std::move(quantiles)), ax, 0);
     }
