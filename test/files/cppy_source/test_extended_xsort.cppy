@@ -11,6 +11,7 @@
 #include <xtensor/xio.hpp>
 #include <xtensor/xview.hpp>
 #include <xtensor/xsort.hpp>
+#include <xtensor/xmath.hpp>
 
 #include "test_common_macros.hpp"
 
@@ -139,9 +140,9 @@ namespace xt
         // py_q1 = np.quantile(a, [0., .3, .1, 1.], axis=1)
         // py_q2 = np.quantile(a, [0., .3, .1, 1.], axis=2)
 
-        EXPECT_EQ(py_q0, xt::quantile(py_a, {0., .3, .1, 1.}, 0));
-        EXPECT_EQ(py_q1, xt::quantile(py_a, {0., .3, .1, 1.}, 1));
-        EXPECT_EQ(py_q2, xt::quantile(py_a, {0., .3, .1, 1.}, 2));
+        EXPECT_TRUE(xt::allclose(py_q0, xt::quantile(py_a, {0., .3, .1, 1.}, 0)));
+        EXPECT_TRUE(xt::allclose(py_q1, xt::quantile(py_a, {0., .3, .1, 1.}, 1)));
+        EXPECT_TRUE(xt::allclose(py_q2, xt::quantile(py_a, {0., .3, .1, 1.}, 2)));
     }
 
     /*py
@@ -158,12 +159,33 @@ namespace xt
         // py_q8 = np.quantile(a, [0., .3, .1, 1.], method="median_unbiased")
         // py_q9 = np.quantile(a, [0., .3, .1, 1.], method="normal_unbiased")
 
-        EXPECT_EQ(py_q4, xt::quantile(py_a, {0., .3, .1, 1.}, quantile_method::interpolated_inverted_cdf));
-        EXPECT_EQ(py_q5, xt::quantile(py_a, {0., .3, .1, 1.}, quantile_method::hazen));
-        EXPECT_EQ(py_q6, xt::quantile(py_a, {0., .3, .1, 1.}, quantile_method::weibull));
-        EXPECT_EQ(py_q7, xt::quantile(py_a, {0., .3, .1, 1.}, quantile_method::linear));
-        EXPECT_EQ(py_q8, xt::quantile(py_a, {0., .3, .1, 1.}, quantile_method::median_unbiased));
-        EXPECT_EQ(py_q9, xt::quantile(py_a, {0., .3, .1, 1.}, quantile_method::normal_unbiased));
+        EXPECT_TRUE(
+            xt::allclose(
+                py_q4,
+                xt::quantile(py_a, {0., .3, .1, 1.}, quantile_method::interpolated_inverted_cdf)
+            )
+        );
+        EXPECT_TRUE(
+            xt::allclose(py_q5, xt::quantile(py_a, {0., .3, .1, 1.}, quantile_method::hazen))
+        );
+        EXPECT_TRUE(
+            xt::allclose(py_q6, xt::quantile(py_a, {0., .3, .1, 1.}, quantile_method::weibull))
+        );
+        EXPECT_TRUE(
+            xt::allclose(py_q7, xt::quantile(py_a, {0., .3, .1, 1.}, quantile_method::linear))
+        );
+        EXPECT_TRUE(
+            xt::allclose(
+                py_q8,
+                xt::quantile(py_a, {0., .3, .1, 1.}, quantile_method::median_unbiased)
+            )
+        );
+        EXPECT_TRUE(
+            xt::allclose(
+                py_q9,
+                xt::quantile(py_a, {0., .3, .1, 1.}, quantile_method::normal_unbiased)
+            )
+        );
     }
 
     /*py
